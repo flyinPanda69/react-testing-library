@@ -22,8 +22,29 @@ test('button has correct initial color, and updates when clicked', () => {
 
 });
 
-test('button turns blue when clicked', ()=> {
+test('initial conditions', ()=> {
   render(<App/>);
-  const colorButton = screen.getByRole('button',  { name : 'Change to blue' });
-  //expect the button click 
+  // check that the button starts out enabled
+  const colorButton = screen.getByRole('button', {name : 'Change to blue'});
+  expect(colorButton).toBeEnabled();
+
+  // check that the checkbox starts out unchecked
+  const checkbox = screen.getByRole('checkbox');
+  expect(colorButton).not.toBeChecked();
+});
+
+//Code quiz for checkbox
+
+test('check the button state on checkbox click', ()=> {
+  render(<App/>);
+
+  const checkbox = screen.getByRole('checkbox');
+  const colorButton = screen.getByRole('button');
+  //fire the checkbox click event, and check if the color button is getting disabled or not
+  fireEvent.click(checkbox);
+  expect(colorButton).toBeDisabled();
+  
+  //fire the checkbox again to check if the button is getting enabled or not
+  fireEvent.click(checkbox);
+  expect(colorButton).toBeEnabled();
 });
