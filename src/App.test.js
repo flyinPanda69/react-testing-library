@@ -1,6 +1,9 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import App from './App';
+import App, { replaceCamelWithSpaces } from './App';
 import { logRoles } from '@testing-library/dom';
+
+//Functions
+
 
 test('button has correct initial color, and updates when clicked', () => {
   const {container} = render(<App/>);
@@ -48,3 +51,61 @@ test('check the button state on checkbox click', ()=> {
   fireEvent.click(checkbox);
   expect(colorButton).toBeEnabled();
 });
+
+
+test('click checkbox to disable the button and change the color to grey and renables it back after unchecking the checkbox', ()=>{
+  render(<App/>);
+
+  const colorButton = screen.getByRole('button', {name : 'Change to blue'});
+  const checkbox = screen.getByRole('checkbox', {name : 'Disable button'});
+
+  //fire event to simulate checkbox
+  fireEvent.click(checkbox);
+  //Check the button is grey
+  expect(colorButton).toHaveStyle({backgroundColor : 'grey'});
+  expect(colorButton).not.toBeEnabled();
+  
+  //simulate checkbox to enable the button by unchecking the checkbox
+  fireEvent.click(checkbox);
+  expect(colorButton).toBeEnabled();
+  expect(colorButton).toHaveStyle({backgroundColor : 'red'});
+});
+
+
+test('click the button to change the color to blue, then simulate the checkbox click to disable the button and renable it', ()=>{
+  render(<App/>);
+
+  const colorButton = screen.getByRole('button', {name : 'Change to blue'});
+  const checkbox = screen.getByRole('checkbox', {name : 'Disable button'});
+
+  //fire event to simulate button click;
+  fireEvent.click(colorButton);
+
+  //fire event to simulate checkbox click;
+  fireEvent.click(checkbox);
+
+  //Assert the button style and color
+  expect(colorButton).toBeDisabled();
+  expect(colorButton).toHaveStyle({backgroundColor : 'grey'});
+
+  //fire event to simulate uncheck event
+  fireEvent.click(checkbox);
+
+  //Assert the button style and color back to blue
+  expect(colorButton).toBeEnabled();
+  expect(colorButton).toHaveStyle({backgroundColor : 'blue'});
+});
+
+describe('spaces before camel-case capital leters', ()=> {
+  test('Works for no inner capital letters', () => {
+    expect(replaceCamelWithSpaces('Red')).toBe('Red');
+  });
+
+  test ('Works for one inner capital letter', ()=> {
+    expect(replaceCamelWithSpaces('MidnightBlue')).toBe('Midnight Blue');
+  });
+
+  test ('Works for multiple inner capital letter', () => {
+    expect(replaceCamelWithSpaces('MidnightVioletRed')).toBe('Midnight Violet Red');
+  });
+})
